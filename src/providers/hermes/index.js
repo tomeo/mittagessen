@@ -1,8 +1,8 @@
 const axios = require('axios');
 const dateFns = require('date-fns');
 const getDay = require('date-fns/get_day');
+const stripHtml = require('../../stripHtml');
 const decode = require('decode-html');
-const cheerio = require('cheerio');
 
 module.exports = () => {
   return axios
@@ -14,18 +14,23 @@ module.exports = () => {
     )
     .then(response => {
       return {
+        restaurant: 'Hermes',
         allWeek: '',
-        days: response.data.LunchMenus.map(d => ({
-          day: getDay(d.Date),
-          menu: parseMenu(d.Html)
-        })).filter(w => w.menu !== '')
+        days: response.data.LunchMenus.slice(0, 5)
+          .map(d => ({
+            day: getDay(d.Date),
+            date: d.Date,
+            menu: parseMenu(d.Html)
+          }))
+          .filter(w => w.menu !== '')
       };
     });
 };
 
 const parseMenu = html => {
-    if (!html) return [];
-    var decoded = decode(html);
-    let $ = cheerio.load(decoded);
-    return $('p').html().split('<br>');
+  if (!html) return [];
+  return html
+    .split('<br />')
+    .map(h => stripHtml(h))
+    .map(h => decode(h));
 };
