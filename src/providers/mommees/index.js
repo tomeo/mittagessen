@@ -16,14 +16,9 @@ module.exports = () => {
     current = current
       .next()
       .next()
-      .next()
-      .next()
-      .next()
       .next();
     var vegetarian = $(current).text();
     current = current
-      .next()
-      .next()
       .next()
       .next()
       .next();
@@ -33,13 +28,13 @@ module.exports = () => {
         .text()
         .replace('Huvudrätt', '');
       current = current.next();
+      if (i === 3 || i === 4  ) {
+        current = current.next();
+      }
       meal += $(current)
         .text()
         .replace('Tillbehör', '');
       current = current.next().next();
-      if (i !== 3) {
-        current = current.next();
-      }
       return {
         day: i,
         menu: [meal.replace(/\n/g, ' ').trim()]
