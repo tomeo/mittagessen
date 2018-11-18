@@ -2,49 +2,35 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 module.exports = () => {
-  return axios.get('https://mommees.se/').then(response => {
+  return axios.get('https://mommees.se/lunchmeny/').then(response => {
     let $ = cheerio.load(response.data);
-    let current = $('.wpb_wrapper > h2')
-      .next()
-      .next();
-    let week = Number(
-      $(current)
-        .text()
-        .match(/\d+/g)
-    );
+    let current = $('.wpb_text_column.wpb_content_element .wpb_wrapper');
 
-    current = current
-      .next()
-      .next()
-      .next();
-    var vegetarian = $(current).text();
-    current = current
-      .next()
-      .next()
-      .next();
-
-    let meals = [1, 2, 3, 4, 5].map(i => {
-      var meal = $(current)
-        .text()
-        .replace('Huvudrätt', '');
-      current = current.next();
-      if (i === 3 || i === 4  ) {
-        current = current.next();
+    let meals = [];
+    current.each((i, element) => {
+      if (i !== 0) {
+        var mealText = $(element)
+          .text()
+          .replace('MÅNDAG', '')
+          .replace('TISDAG', '')
+          .replace('ONSDAG', '')
+          .replace('TORSDAG', '')
+          .replace('FREDAG', '')
+          .replace('Huvudrätt', '')
+          .replace('Tillbehör', '')
+          .replace(/\n/g, ' ')
+          .replace(/\s\s+/g, ' ')
+          .trim();
+        meals.push({
+          day: i,
+          menu: [mealText]
+        });
       }
-      meal += $(current)
-        .text()
-        .replace('Tillbehör', '');
-      current = current.next().next();
-      return {
-        day: i,
-        menu: [meal.replace(/\n/g, ' ').trim()]
-      };
     });
 
     return {
       restaurant: 'Mommees',
-      week,
-      allWeek: vegetarian,
+      allWeek: 'Veckans gröna',
       days: meals.map(m => ({
         day: m.day,
         menu: m.menu
