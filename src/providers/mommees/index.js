@@ -28,9 +28,22 @@ module.exports = () => {
       }
     });
 
+    const pTags = $('p').toArray();
+    let greenOfTheWeek = 'Not found';
+
+    pTags.find(pTag => {
+      const pTagHtml = $.html(pTag);
+      const res = pTagHtml.match(/<\s*span[^>]*>\s*Veckans\sgr&#xF6;na\s*[^>]*>[^>]*>([^<]+)</);
+      if (res) {
+        greenOfTheWeek = res[1];
+        return true;
+      }
+      return false;
+    });
+
     return {
       restaurant: 'Mommees',
-      allWeek: 'Veckans gröna',
+      allWeek: `Veckans gröna${greenOfTheWeek}`,
       days: meals.map(m => ({
         day: m.day,
         menu: m.menu
@@ -38,3 +51,4 @@ module.exports = () => {
     };
   });
 };
+
