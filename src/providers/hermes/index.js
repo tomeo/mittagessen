@@ -1,8 +1,29 @@
-const axios = require('axios');
-const dateFns = require('date-fns');
-const getDay = require('date-fns/get_day');
-const stripHtml = require('../../stripHtml');
-const decode = require('decode-html');
+const axios = require('axios'),
+  dateFns = require('date-fns'),
+  getDay = require('date-fns/get_day'),
+  R = require('ramda'),
+  cheerio = require('cheerio'),
+  cleanString = require('../../cleanString');
+
+const clean = R.pipe(
+  cleanString,
+  s => s.replace('Gröna smaker', ''),
+  s => s.replace('Klassiska smaker', ''),
+  s => s.replace('Moderna smaker', ''),
+  s => s.trim()
+);
+
+const parseMenu = html => {
+  if (!html) {
+    return [];
+  }
+
+  let $ = cheerio.load(html);
+  return $('p')
+    .toArray()
+    .map(p => $(p).text())
+    .map(clean);
+};
 
 module.exports = () => {
   return axios
@@ -22,15 +43,7 @@ module.exports = () => {
             date: d.Date,
             menu: parseMenu(d.Html)
           }))
-          .filter(w => w.menu !== '')
+          .filter(w => w.menu)
       };
     });
-};
-
-const parseMenu = html => {
-  if (!html) return [];
-  return html
-    .split('<br />')
-    .map(h => stripHtml(h))
-    .map(h => decode(h));
 };

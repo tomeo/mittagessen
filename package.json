@@ -1,6 +1,6 @@
 {
   "name": "mittagessen",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,8 @@
     "axios": "^0.18.0",
     "cheerio": "^1.0.0-rc.2",
     "date-fns": "^1.29.0",
-    "decode-html": "^2.0.0"
+    "he": "^1.2.0",
+    "ramda": "^0.26.1"
   },
   "devDependencies": {
     "eslint": "^5.5.0",

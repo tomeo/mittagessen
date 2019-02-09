@@ -1,5 +1,12 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
+const axios = require('axios'),
+  cheerio = require('cheerio'),
+  R = require('ramda'),
+  cleanString = require('../../cleanString');
+
+const clean = R.pipe(
+  cleanString,
+  s => s.replace(': ', '')
+);
 
 module.exports = () => {
   return axios.get('https://mommees.se/lunchmeny/').then(response => {
@@ -23,27 +30,28 @@ module.exports = () => {
           .trim();
         meals.push({
           day: i,
-          menu: [mealText]
+          menu: [clean(mealText)]
         });
       }
     });
 
-    const pTags = $('p').toArray();
     let greenOfTheWeek = 'Not found';
-
-    pTags.find(pTag => {
-      const pTagHtml = $.html(pTag);
-      const res = pTagHtml.match(/<\s*span[^>]*>\s*Veckans\sgr&#xF6;na\s*[^>]*>[^>]*>([^<]+)</);
-      if (res) {
-        greenOfTheWeek = res[1];
-        return true;
-      }
-      return false;
-    });
+    $('p')
+      .toArray()
+      .find(pTag => {
+        const res = $.html(pTag).match(
+          /<\s*span[^>]*>\s*Veckans\sgr&#xF6;na\s*[^>]*>[^>]*>([^<]+)</
+        );
+        if (res) {
+          greenOfTheWeek = clean(res[1]);
+          return true;
+        }
+        return false;
+      });
 
     return {
       restaurant: 'Mommees',
-      allWeek: `Veckans gröna${greenOfTheWeek}`,
+      allWeek: greenOfTheWeek,
       days: meals.map(m => ({
         day: m.day,
         menu: m.menu
@@ -51,4 +59,3 @@ module.exports = () => {
     };
   });
 };
-
