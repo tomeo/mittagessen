@@ -30,14 +30,20 @@ const getRestaurants = () => {
   });
 };
 
+const handleRestaurantsRequest = (res) => getRestaurants()
+  .then(menus =>
+    res.status(200).send({
+      restaurants: menus
+    })
+  )
+  .catch(err => console.log(err));
+
 app.get('/api/v1/lunch', (_req, res) => {
-  getRestaurants()
-    .then(menus =>
-      res.status(200).send({
-        restaurants: menus
-      })
-    )
-    .catch(err => console.log(err));
+  return handleRestaurantsRequest(res);
+});
+
+app.post('/api/v1/lunch', (_req, res) => {
+  return handleRestaurantsRequest(res);
 });
 
 app.get('/', (_req, res) => {
