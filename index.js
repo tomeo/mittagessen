@@ -1,30 +1,43 @@
-const providers = require('./src/providers');
-const getDateOfNextWeekday = require('./src/getDateOfNextWeekday');
-const getDay = require('date-fns/get_iso_day');
-var getISOWeek = require('date-fns/get_iso_week');
+const express = require('express'),
+  getDateOfNextWeekday = require('./src/getDateOfNextWeekday'),
+  getDay = require('date-fns/get_iso_day'),
+  providers = require('./src/providers');
 
-const printItem = item => console.log(`=> ${item}`);
+const app = express(),
+  PORT = 5000;
 
-const print = menu => {
-  let nextWeekDay = getDateOfNextWeekday();
-  console.log(`${menu.restaurant}:`);
-  if (menu.week !== menu.week) {
-    if (getISOWeek(nextWeekDay) !== menu.week) {
-      console.log(`WARN: Menu is for week ${menu.week}`);
-    }
-  }
-  var day = getDay(nextWeekDay);
-  if (menu.allWeek) {
-    printItem(menu.allWeek);
-  }
-  menu.days.find(d => d.day === day).menu.map(m => printItem(m));
-  console.log();
-};
+const getRestaurants = () => {
+  return Promise.all(providers).then(restaurants => {
+    return restaurants.map(restaurant => {
+      let nextWeekDay = getDateOfNextWeekday();
+      var day = getDay(nextWeekDay);
 
-const getMenus = () => {
-  Promise.all(providers).then(values => {
-    values.forEach(value => print(value));
+      var todaysMenu = restaurant.days
+        .find(d => d.day === day)
+        .menu;
+
+      if (restaurant.allWeek) {
+        todaysMenu.push(restaurant.allWeek);
+      }
+      
+      return {
+        restaurant: restaurant.restaurant,
+        menu: todaysMenu
+      };
+    });
   });
 };
 
-getMenus();
+app.get('/api/v1/lunch', (_req, res) => {
+  getRestaurants()
+    .then(menus =>
+      res.status(200).send({
+        restaurants: menus
+      })
+    )
+    .catch(err => console.log(err));
+});
+
+app.listen(PORT, () => {
+  console.log(`server running on port ${PORT}`);
+});
