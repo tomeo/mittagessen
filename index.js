@@ -14,36 +14,31 @@ const getRestaurants = () => {
       let nextWeekDay = getDateOfNextWeekday();
       var day = getDay(nextWeekDay);
 
-      var todaysMenu = restaurant.days
-        .find(d => d.day === day)
-        .menu;
+      var todaysMenu = restaurant.days.find(d => d.day === day).menu;
 
-      if (restaurant.allWeek) {
-        todaysMenu.push(restaurant.allWeek);
-      }
-      
       return {
-        restaurant: restaurant.restaurant,
-        menu: todaysMenu
+        name: restaurant.restaurant,
+        menu: todaysMenu,
+        allWeek: restaurant.allWeek
       };
     });
   });
 };
 
-const handleRestaurantsRequest = (res) => getRestaurants()
-  .then(menus =>
-    res.status(200).send({
-      restaurants: menus
-    })
-  )
-  .catch(err => console.log(err));
-
 app.get('/api/v1/lunch', (_req, res) => {
-  return handleRestaurantsRequest(res);
+  return getRestaurants()
+    .then(menus =>
+      res.status(200).send({
+        restaurants: menus
+      })
+    )
+    .catch(err => console.log(err));
 });
 
 app.post('/api/v1/lunch', (_req, res) => {
-  return handleRestaurantsRequest(res);
+  return getRestaurants().then(menus =>
+    res.status(200).send(JSON.stringify(menus, null, 2))
+  );
 });
 
 app.get('/', (_req, res) => {
