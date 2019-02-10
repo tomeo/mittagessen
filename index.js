@@ -3,8 +3,10 @@ const express = require('express'),
   getDay = require('date-fns/get_iso_day'),
   providers = require('./src/providers');
 
-const app = express(),
-  PORT = 5000;
+const app = express();
+
+app.set('port', process.env.PORT || 5000);
+app.set('host', process.env.HOST || 'localhost');
 
 const getRestaurants = () => {
   return Promise.all(providers).then(restaurants => {
@@ -42,6 +44,6 @@ app.get('/', (_req, res) => {
   res.status(200).send('OK');
 });
 
-app.listen(PORT, () => {
-  console.log(`server running on port ${PORT}`);
+app.listen(app.get('port'), () => {
+  console.log(`server running on port ${app.get('port')}`);
 });
