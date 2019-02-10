@@ -25,6 +25,24 @@ const getRestaurants = () => {
   });
 };
 
+const formatOutputForSlack = restaurants => {
+  var s = '';
+  restaurants.forEach(restaurant => {
+    s += `${restaurant.name}:\n`;
+    if (restaurant.allWeek) {
+      s += `=> ${restaurant.allWeek}\n`;
+    }
+    if (restaurant.menu && restaurant.menu.length) {
+      restaurant.menu.forEach(m => {
+        s += `=> ${m}\n`;
+      });
+    }
+    s += '\n';
+  });
+
+  return s;
+}
+
 app.get('/api/v1/lunch', (_req, res) => {
   return getRestaurants()
     .then(menus =>
@@ -36,8 +54,8 @@ app.get('/api/v1/lunch', (_req, res) => {
 });
 
 app.post('/api/v1/lunch', (_req, res) => {
-  return getRestaurants().then(menus =>
-    res.status(200).send(JSON.stringify(menus, null, 2))
+  return getRestaurants().then(restaurants =>
+    res.status(200).send(formatOutputForSlack(restaurants))
   );
 });
 
