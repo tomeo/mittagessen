@@ -41,7 +41,7 @@ const formatOutputForSlack = restaurants => {
   });
 
   return s;
-}
+};
 
 app.get('/api/v1/lunch', (_req, res) => {
   return getRestaurants()
