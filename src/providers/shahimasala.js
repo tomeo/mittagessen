@@ -5,33 +5,39 @@ module.exports = () => {
   return axios
     .get('http://shahimasala.se/Helsingborg/lunch/')
     .then(response => {
-      let $ = cheerio.load(response.data);
-      let current = $('.et_pb_section.et_pb_section_1.et_section_regular');
-      $ = cheerio.load(current.html());
+      const $ = cheerio.load(
+        cheerio
+          .load(response.data)(
+            '.et_pb_section.et_pb_section_1.et_section_regular'
+          )
+          .html()
+      );
 
-      let days = [];
-      [1, 2, 3, 4, 5].forEach(day => {
-        const menuHtml = $(
-          `.et_pb_column_${day} .et_pb_bg_layout_light div`
-        ).toArray();
+      const days = [1, 2, 3, 4, 5].map(day => {
         var menu = [];
         var meal = [];
-        menuHtml.forEach(h => {
-          const text = $(h).text();
-          if (text.length === 0 || text.trim() === 0) {
-            if (meal.length !== 0) {
+
+        $(`.et_pb_column_${day} .et_pb_bg_layout_light div`)
+          .toArray()
+          .forEach(h => {
+            const text = $(h)
+              .text()
+              .trim();
+            if ((text.length === 0 || text === 0) && meal.length !== 0) {
               menu.push(meal.join(' '));
               meal = [];
+            } else if (meal.length < 2) {
+              meal.push(text);
             }
-          } else {
-            meal.push(text.trim());
-          }
-        });
-        days.push({
+          });
+
+        return {
           day,
           menu
-        });
+        };
       });
+
+      console.log(days);
 
       return {
         restaurant: 'Shahi Masala',
