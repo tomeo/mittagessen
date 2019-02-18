@@ -26,7 +26,7 @@ module.exports = () => {
             if ((text.length === 0 || text === 0) && meal.length !== 0) {
               menu.push(meal.join(' '));
               meal = [];
-            } else if (meal.length < 2) {
+            } else if (meal.length < 2 && text.length) {
               meal.push(text);
             }
           });
@@ -36,8 +36,6 @@ module.exports = () => {
           menu
         };
       });
-
-      console.log(days);
 
       return {
         restaurant: 'Shahi Masala',
