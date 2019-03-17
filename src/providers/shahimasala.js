@@ -1,5 +1,6 @@
 const axios = require('axios'),
-  cheerio = require('cheerio');
+  cheerio = require('cheerio'),
+  removeEveryNthElement = require('../removeEveryNthElement');
 
 module.exports = () => {
   return axios
@@ -15,21 +16,23 @@ module.exports = () => {
 
       const days = [1, 2, 3, 4, 5].map(day => {
         var menu = [];
-        var meal = [];
-
-        $(`.et_pb_column_${day} .et_pb_bg_layout_light div`)
+        
+        const unclean = $(`.et_pb_column_${day} .et_pb_bg_layout_light div`)
           .toArray()
-          .forEach(h => {
-            const text = $(h)
-              .text()
-              .trim();
-            if ((text.length === 0 || text === 0) && meal.length !== 0) {
-              menu.push(meal.join(' '));
-              meal = [];
-            } else if (meal.length < 2 && text.length) {
-              meal.push(text);
-            }
-          });
+          .map(h => $(h).text().trim())
+          .filter(t => t.length);
+        const meals = removeEveryNthElement(unclean, 3);
+
+        let meal = [];
+        for(let i = 1; i < meals.length + 1; i++) {
+          if (i % 2 == 0) {
+            meal.push(meals[i-1]);
+            menu.push(meal.join(' '));
+            meal = [];
+          } else {
+            meal.push(meals[i-1]);
+          }
+        }
 
         return {
           day,
@@ -37,6 +40,7 @@ module.exports = () => {
         };
       });
 
+      console.log(days);
       return {
         restaurant: 'Shahi Masala',
         days,
