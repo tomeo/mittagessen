@@ -19,7 +19,8 @@ const getRestaurants = () => {
       return {
         name: restaurant.restaurant,
         menu: todaysMenu,
-        allWeek: restaurant.allWeek
+        allWeek: restaurant.allWeek,
+        url: restaurant.url
       };
     });
   });

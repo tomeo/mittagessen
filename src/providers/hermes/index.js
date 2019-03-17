@@ -5,6 +5,9 @@ const axios = require('axios'),
   cheerio = require('cheerio'),
   cleanString = require('../../cleanString');
 
+const baseUrl =
+  'https://www.fazerfoodco.se/api/restaurant/menu/week?language=sv&restaurantPageId=197223&weekDate=';
+
 const clean = R.pipe(
   cleanString,
   s => s.replace('Gröna smaker', ''),
@@ -26,24 +29,19 @@ const parseMenu = html => {
 };
 
 module.exports = () => {
-  return axios
-    .get(
-      `https://www.fazerfoodco.se/api/restaurant/menu/week?language=sv&restaurantPageId=197223&weekDate=${dateFns.format(
-        Date.now(),
-        'YYYY-MM-DD'
-      )}`
-    )
-    .then(response => {
-      return {
-        restaurant: 'Hermes',
-        allWeek: '',
-        days: response.data.LunchMenus.slice(0, 5)
-          .map(d => ({
-            day: getDay(d.Date),
-            date: d.Date,
-            menu: parseMenu(d.Html)
-          }))
-          .filter(w => w.menu)
-      };
-    });
+  var url = `${baseUrl}${dateFns.format(Date.now(), 'YYYY-MM-DD')}`;
+  return axios.get(url).then(response => {
+    return {
+      restaurant: 'Hermes',
+      allWeek: '',
+      days: response.data.LunchMenus.slice(0, 5)
+        .map(d => ({
+          day: getDay(d.Date),
+          date: d.Date,
+          menu: parseMenu(d.Html)
+        }))
+        .filter(w => w.menu),
+      url
+    };
+  });
 };

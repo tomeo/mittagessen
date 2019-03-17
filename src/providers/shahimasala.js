@@ -2,6 +2,8 @@ const axios = require('axios'),
   cheerio = require('cheerio'),
   removeEveryNthElement = require('../removeEveryNthElement');
 
+const url = 'http://shahimasala.se/Helsingborg/lunch/';
+
 module.exports = () => {
   return axios
     .get('http://shahimasala.se/Helsingborg/lunch/')
@@ -47,7 +49,8 @@ module.exports = () => {
       return {
         restaurant: 'Shahi Masala',
         days,
-        allWeek: 'Otroliga mängder sås'
+        allWeek: 'Otroliga mängder sås',
+        url
       };
     });
 };

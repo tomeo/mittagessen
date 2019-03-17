@@ -3,13 +3,15 @@ const axios = require('axios'),
   R = require('ramda'),
   cleanString = require('../../cleanString');
 
+const url = 'https://mommees.se/lunchmeny/';
+
 const clean = R.pipe(
   cleanString,
   s => s.replace(': ', '')
 );
 
 module.exports = () => {
-  return axios.get('https://mommees.se/lunchmeny/').then(response => {
+  return axios.get(url).then(response => {
     let $ = cheerio.load(response.data);
     let current = $('.wpb_text_column.wpb_content_element .wpb_wrapper');
 
@@ -55,7 +57,8 @@ module.exports = () => {
       days: meals.map(m => ({
         day: m.day,
         menu: m.menu
-      }))
+      })),
+      url
     };
   });
 };
