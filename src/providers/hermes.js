@@ -22,10 +22,22 @@ const parseMenu = html => {
   }
 
   let $ = cheerio.load(html);
-  return $('p')
+
+  let ps = $('p')
     .toArray()
-    .map(p => $(p).text())
-    .map(clean);
+    .map(p => $(p).html());
+
+  ps.forEach(p => {
+    if (p.includes('<br>')) {
+      console.log('HERE', p);
+      return p
+        .split('<br>')
+        .map(clean)
+        .filter(p => p.length);
+    }
+  });
+
+  return ps.map(clean).filter(p => p.length);
 };
 
 module.exports = () => {
