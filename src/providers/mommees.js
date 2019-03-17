@@ -1,7 +1,7 @@
 const axios = require('axios'),
   cheerio = require('cheerio'),
   R = require('ramda'),
-  cleanString = require('../../cleanString');
+  cleanString = require('../cleanString');
 
 const url = 'https://mommees.se/lunchmeny/';
 

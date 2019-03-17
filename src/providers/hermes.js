@@ -3,7 +3,7 @@ const axios = require('axios'),
   getDay = require('date-fns/get_day'),
   R = require('ramda'),
   cheerio = require('cheerio'),
-  cleanString = require('../../cleanString');
+  cleanString = require('../cleanString');
 
 const baseUrl =
   'https://www.fazerfoodco.se/api/restaurant/menu/week?language=sv&restaurantPageId=197223&weekDate=';
